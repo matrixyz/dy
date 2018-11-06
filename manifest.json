@@ -1,0 +1,14 @@
+{ "name": "dy", "manifest_version": 2, "version": "1.0", "description": "斗鱼禁言小助手！",
+  "content_scripts": [
+  {
+    "matches": ["https://*.douyu.com/*"],
+    "js": ["jquery172.min.js","content-script.js"]
+  }
+], "browser_action":
+{
+  "default_icon": "logo.png",
+
+  "default_title": "这是一个示例Chrome插件",
+  "default_popup": "popup.html"
+}
+}
