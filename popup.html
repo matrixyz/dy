@@ -8,10 +8,12 @@
     <script src="popper.min.js"  ></script>
     <script src="bootstrap.min.js"  ></script>
     <script src="popup-script.js"></script>
-
+<style type="text/css">
+    button{margin-left:3px;margin-bottom:3px;}
+</style>
 </head>
 <body  >
-<div class="container-fluid" style="width: 770px;padding-left: 0px;padding-right: 0px" >
+<div class="container-fluid" style="width: 790px;padding-left: 0px;padding-right: 0px" >
 
         <div class="card">
             <div class="card-header" >
@@ -23,6 +25,7 @@
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">操作</a>
                         <a class="nav-item nav-link " id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">禁言规则</a>
                         <a class="nav-item nav-link " id="nav-room-tab" data-toggle="tab" href="#nav-room" role="tab" aria-controls="nav-room" aria-selected="false">房间管理</a>
+                        <a class="nav-item nav-link " id="nav-help-tab" data-toggle="tab" href="#nav-help" role="tab" aria-controls="nav-help" aria-selected="false">使用说明</a>
                     </div>
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
@@ -45,9 +48,9 @@
 
                                         <div class="input-group mb-2">
                                             <div class="input-group-prepend">
-                                                <div class="input-group-text">可输入正则表达式</div>
+                                                <div class="input-group-text">关键字</div>
                                             </div>
-                                            <input type="text" class="form-control" id="keywords" placeholder="关键字">
+                                            <input type="text" class="form-control" style="width:400px;" id="keywords" placeholder="关键字">
                                         </div>
                                     </div>
                                     <div class="col-auto">
@@ -62,7 +65,7 @@
                                             <div class="input-group-prepend">
                                                 <div class="input-group-text">级别范围</div>
                                             </div>
-                                            <input type="text" class="form-control" id="levelNo" placeholder="例如[1-3]或[5-5]">
+                                            <input type="text" id="inputAddLevelRule" class="form-control" id="levelNo" placeholder="例如[1-3]或[5-5]">
                                         </div>
                                     </div>
                                     <div class="col-auto">
@@ -75,16 +78,16 @@
                                             <div class="input-group-prepend">
                                                 <div class="input-group-text">禁言时间</div>
                                             </div>
-                                            <select   class="form-control" id="exampleFormControlSelect2">
-                                                <option>1分种</option>
-                                                <option>10分种</option>
-                                                <option>30分钟</option>
-                                                <option>1小时</option>
-                                                <option>8小时</option>
-                                                <option>1天</option>
-                                                <option>3天</option>
-                                                <option>7天</option>
-                                                <option>30天</option>
+                                            <select   class="form-control" id="selectMuteTime">
+                                                <option value="1">1分种</option>
+                                                <option value="10">10分种</option>
+                                                <option value="30">30分钟</option>
+                                                <option value="60" selected>1小时</option>
+                                                <option value="480">8小时</option>
+                                                <option value="1440">1天</option>
+                                                <option value="4320">3天</option>
+                                                <option value="10080">7天</option>
+                                                <option value="43200">30天</option>
                                             </select>
                                         </div>
                                     </div>
@@ -96,7 +99,7 @@
 
                             </div>
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item" id="keywordContaner">
+                                <li class="list-group-item" id="keywordMapRoomContainer">
                                     <button type="button" class="btn btn-warning">房间123990</button>
                                 </li>
 
@@ -140,6 +143,15 @@
                         </div>
 
                 </div>
+                    <div class="tab-pane fade " id="nav-help" role="tabpanel" aria-labelledby="nav-help-tab" >
+
+                         <h1>第一步</h1>
+                        <img src="step1.png"/>
+                        <h1>第二步</h1>
+                        <img src="step2.png"/>
+                        <h1>第三步</h1>
+                        <img src="step3.png"/>
+                    </div>
             </div>
         </div>
 

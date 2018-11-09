@@ -16,57 +16,239 @@ $(document).ready(function(){
 
 
 
-    $("#btnAddRule").click(function(){
 
-        sendMessageToContentScript('btnAddRule--'+$("#keywords").val(), (response) => {
 
-            if(response!=undefined){
-                $("#keywordContaner").empty();
-                var tar=JSON.parse(response);
-                var len=tar.length;
-                for ( var i = 0; i < len; i++) {
-                    $("#keywordContaner").append($('<button type="button" class="btn btn-outline-danger btn-sm">'+tar[i]+'</button>'));
+
+    function fillRoomStateContaner(response){
+        if(response!=undefined ){
+            $("#nav-home").empty();
+            var btnExeAll=$(' <button type="button" class="btn btn-primary   " style="margin-top:5px;" id="btnExeAll">执行所有房间规则</button>');
+            btnExeAll.on("click", function(){
+                sendMessageToContentScript('btnAllExe'  , (response) => {
+                    fillRoomStateContaner(response);
+
+                });
+            });
+            $("#nav-home").append(btnExeAll);
+
+            for (let room in response){
+                if(response[room][3]==1||response[room][3]=="1"){
+                    var dom=$('<button type="button" class="btn btn-success" style="margin-top:5px;" title="'+room+'">房间号'+room+'<span class="badge badge-danger">执行中</span></button>');
+                    var id=room;
+                    dom.on("click", function(){
+                        sendMessageToContentScript('btnUnExe--'+$(this).attr("title")   , (response) => {
+                            fillRoomStateContaner(response);
+
+                        });
+                    });
+                    $("#nav-home").append(dom);
+                }else{
+
+                    var dom=$('<button type="button" class="btn btn-warning" style="margin-top:5px;" title="'+room+'">房间号'+room+'<span class="badge badge-secondary">未执行</span></button>');
+                    var x=room;
+                    dom.on("click", function(){
+
+                        sendMessageToContentScript('btnExe--'+$(this).attr("title")   , (response) => {
+                            fillRoomStateContaner(response);
+
+                        });
+                    });
+                    $("#nav-home").append(dom);
                 }
             }
+        }
+    }
+
+    sendMessageToContentScript('btnUnAllExe', (response) => {
+        fillRoomStateContaner(response);
 
 
-        });
     });
+    $("#btnAddRoom").click(function(){
+        if(/^\d{1,9}$/g.test($.trim($("#roomid").val()))==false){
+            alert("房间号必须为正整数！");
+            return false;
+        }
+        var roomid='r'+$("#roomid").val();
+        console.log($("#roomIdsContent").find("button[title='"+roomid+"']"));
+        if($("#roomIdsContent").find("button[title='"+roomid+"']").length>0){
+            alert("房间号已存在！");
+        }else{
+            sendMessageToContentScript('btnAddRoom--'+roomid, (response) => {
 
-    $("#btnExe").click(function(){
+                fillRoomContainer(response,"roomIdsContent");
 
-        sendMessageToContentScript('btnExe', (response) => {
-
-
-
-        });
-    });
-
-
-    sendMessageToContentScript('queryState', (response) => {
-
-        if(response!=undefined&&response==true){
-            $("#btnExe").removeClass("badge-light");
-            $("#btnExe").addClass("badge-success");
-            $("#btnExe").text("正在执行");
+            });
         }
 
     });
-    $("#nav-profile-tab").click(function(){
-        sendMessageToContentScript('queryKeys', (response) => {
+    $("#nav-room-tab").click(function(){
+        sendMessageToContentScript('queryRooms', (response) => {
 
-            if(response!=undefined){
-                $("#keywordContaner").empty();
-                var tar=JSON.parse(response);
-                var len=tar.length;
-                for ( var i = 0; i < len; i++) {
-                    $("#keywordContaner").append($('<button type="button" class="btn btn-outline-danger btn-sm">'+tar[i]+'</button>'));
-                }
-            }
-
+            fillRoomContainer(response,"roomIdsContent");
         });
     });
+    function delroom(room) {
+        if(room!=undefined){
+
+            sendMessageToContentScript('btnDelRoom--'+room, (response) => {
+
+                fillRoomContainer(response,"roomIdsContent");
+            });
+        }
+    }
+    function fillRoomContainer(response,contanerId) {
+
+        if(response!=undefined){
+            $("#"+contanerId).empty();
+            for (let room in response){
+                var dom=null;
+                if(contanerId=="roomIdsContent"){
+                    dom=$('<button type="button" class="btn btn-warning" title="'+room+'">房间号'+room+'<span class="badge badge-danger">删除</span></button>');
+                    const id=room;
+                    dom.find("span").on("click", function(){
+                        delroom(id);
+                    });
+                }else if(contanerId=="keywordMapRoomContainer"){
+                    dom=$('<button type="button" class="btn btn-warning" title="'+room+'">房间号'+room+'</button>');
+                    const id=room;
+                    dom.on("click", function(){
+                        getRoomKeys(id);
+                        $(this).removeClass("btn-warning");
+                        $(this).addClass("btn-success");
+                        $(this).siblings().removeClass("btn-success");
+                        $(this).siblings().addClass("btn-warning");
+                    });
+                }
+
+                $("#"+contanerId).append(dom);
+            }
+        }
+    }
+    $("#nav-profile-tab").click(function(){
+        sendMessageToContentScript('queryRooms', (response) => {
+
+            fillRoomContainer(response,"keywordMapRoomContainer");
+        });
+    });
+    //添加关键字
+    $("#btnAddRule").click(function(){
+        if($.trim($("#keywords").val())==""){
+            alert("关键字不能为空！");
+            return false;
+        }
+
+       if($("#keywordMapRoomContainer").find("button[class='btn btn-success']").length==0){
+           alert("请先选择房间！");
+           return false;
+       }
+        var roomid=$("#keywordMapRoomContainer").find("button[class='btn btn-success']").attr("title");
+        sendMessageToContentScript('btnAddRule--'+$.trim($("#keywords").val().replace("--",""))+'--'+roomid, (response) => {
+
+            getRoomKeys( roomid );
+        });
+    });
+    //添加粉丝牌
+    $("#btnAddFansRule").click(function(){
+       if($("#keywordMapRoomContainer").find("button[class='btn btn-success']").length==0){
+           alert("请先选择房间！");
+           return false;
+       }
+        var roomid=$("#keywordMapRoomContainer").find("button[class='btn btn-success']").attr("title");
+        sendMessageToContentScript('btnSetFansMedal--'+roomid  , (response) => {
+            getRoomKeys( roomid );
+        });
+    });
+    //添加禁言级别
+    $("#btnAddLevelRule").click(function(){
+        var level=$.trim($("#inputAddLevelRule").val());
+        if(level==""){
+            alert("级别不能为空！");
+            return false;
+        }
+        if(/^\d{1,3}-\d{1,3}$/.test(level)==false){
+            alert("级别格式必须为  m-n  ");
+            return false;
+        }
+       if($("#keywordMapRoomContainer").find("button[class='btn btn-success']").length==0){
+           alert("请先选择房间！");
+           return false;
+       }
+        var roomid=$("#keywordMapRoomContainer").find("button[class='btn btn-success']").attr("title");
+        sendMessageToContentScript('btnAddLevelRule--'+roomid+'--'+$.trim($("#inputAddLevelRule").val())  , (response) => {
+            getRoomKeys( roomid );
+        });
+    });
+    //添加禁言时间
+    $("#btnAddTimeRule").click(function(){
+
+       if($("#keywordMapRoomContainer").find("button[class='btn btn-success']").length==0){
+           alert("请先选择房间！");
+           return false;
+       }
+        var roomid=$("#keywordMapRoomContainer").find("button[class='btn btn-success']").attr("title");
+        sendMessageToContentScript('btnAddTimeRule--'+roomid+'--'+$.trim($("#selectMuteTime").val())  , (response) => {
+            getRoomKeys( roomid );
+        });
+    });
+    //根据房间id获取房间的禁言关键词
+    function getRoomKeys(room) {
+        if(room!=undefined){
+
+            sendMessageToContentScript('getRoomKeys', (response) => {
 
 
+                if(response!=undefined) {
+                    $("#roomsMapKeywords" ).empty();
+                    var keys=response[room];
+                    var len=keys.length;
+                    for(var i=0;i<len;i++){
+                        var dom=null;
+                        const id=room;
+                        if(i<6){
 
+                            if(i==0){
+                                dom=$(' <button type="button" class="btn btn-success ">级别'+keys[i]+'</button>');
+                            }else if(i==2){
+                                dom=$(' <button type="button" class="btn btn-success ">禁言时间'+convertTime(keys[i])+'</button>');
+                            }else if(i==1){
+                                dom=$(' <button type="button" class="btn btn-success ">'+keys[i]+'</button>');
+                            }
+                        }else{
+                            dom=$(' <button type="button" class="btn btn-primary ">'+keys[i]+'<span class="badge badge-danger" title="'+ i +'">删除</span></button>');
+                            dom.find("span").on("click", function(){
+                                sendMessageToContentScript('btnDelKeyInRoom--'+id+'--'+ $(this).attr("title")  , (response) => {
+
+                                    getRoomKeys( id );
+                                });
+                            });
+                        }
+
+
+                        $("#roomsMapKeywords").append(dom);
+                    }
+
+
+                }
+
+
+            });
+        }
+    }
+    //将分钟转换为小时或者天
+    function convertTime(minute) {
+        if(minute!=undefined){
+            if(/\d/.test(minute)){
+                var m=parseInt(minute);
+                if(m>59&&m<1440){
+                    return (minute/60)+"小时";
+                }else if(m>1439){
+                    return (minute/(60*24))+"天";
+                }else{
+                    return minute+"分";
+                }
+            }
+        }
+        return "1分";
+    }
 });

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="application/javascript" language="JavaScript">
+        function  arrContains(arr,tar) {
+            if(arr!=undefined&&arr instanceof Array ){
+                var len=arr.length;
+                for ( var i = 0; i < len; i++) {
+                    if(arr[i]==tar){
+                        return true;
+
+                    }
+                }
+            }
+            return false;
+        }
+        var tar={};//最外层集合要定义成对象  不能定义位数组
+        function test(room_id,patten) {
+            var room_patten_collection=tar[room_id];
+           // alert(typeof room_patten_collection);
+            if(room_patten_collection==undefined){
+                tar[room_id]=new Array();
+                tar[room_id].push("级别");
+                tar[room_id].push("粉丝牌");
+                tar[room_id].push("时间");
+                tar[room_id].push("占位1");
+                tar[room_id].push("占位2");
+                 tar[room_id].push(patten);//第六个位置开始为禁言关键字
+
+               // console.log(JSON.parse(x))
+
+            }else {
+                if(arrContains(room_patten_collection,patten)==false){
+                    tar[room_id].push(patten);
+                }
+
+            }
+            return tar;
+        }
+        function a() {
+            test("r5689655","aaaaaa");
+            test("r5689655","bbbb");
+            test("r5689655","ccccc");
+            var index=tar["r5689655"].indexOf("ccccc");
+            if(index>-1){
+                tar["r5689655"].splice(index, 1);
+            }
+
+            console.log(JSON.stringify(tar));
+        }
+function f() {
+    var x=[];
+    x[0]="asfasdf";
+    x[1]= "dddddddddddddd";
+
+     delete x[i];
+    console.log(x);
+}
+    </script>
+</head>
+<body>
+<h1>
+<a href="#" onclick="f()">a</a>
+</h1>
+</body>
+</html>
