@@ -19,13 +19,13 @@ $(document).ready(function(){
 
 
 
-    function fillRoomStateContaner(response){
+    function fillRoomStateContainer(response){
         if(response!=undefined ){
             $("#nav-home").empty();
             var btnExeAll=$(' <button type="button" class="btn btn-primary   " style="margin-top:5px;" id="btnExeAll">执行所有房间规则</button>');
             btnExeAll.on("click", function(){
                 sendMessageToContentScript('btnAllExe'  , (response) => {
-                    fillRoomStateContaner(response);
+                    fillRoomStateContainer(response);
 
                 });
             });
@@ -37,7 +37,7 @@ $(document).ready(function(){
                     var id=room;
                     dom.on("click", function(){
                         sendMessageToContentScript('btnUnExe--'+$(this).attr("title")   , (response) => {
-                            fillRoomStateContaner(response);
+                            fillRoomStateContainer(response);
 
                         });
                     });
@@ -49,7 +49,7 @@ $(document).ready(function(){
                     dom.on("click", function(){
 
                         sendMessageToContentScript('btnExe--'+$(this).attr("title")   , (response) => {
-                            fillRoomStateContaner(response);
+                            fillRoomStateContainer(response);
 
                         });
                     });
@@ -60,8 +60,8 @@ $(document).ready(function(){
     }
 
     sendMessageToContentScript('btnUnAllExe', (response) => {
-        fillRoomStateContaner(response);
-
+        fillRoomStateContainer(response);
+        fillRoomContainer(response,"roomIdsContent");
 
     });
     $("#btnAddRoom").click(function(){
@@ -70,7 +70,7 @@ $(document).ready(function(){
             return false;
         }
         var roomid='r'+$("#roomid").val();
-        console.log($("#roomIdsContent").find("button[title='"+roomid+"']"));
+
         if($("#roomIdsContent").find("button[title='"+roomid+"']").length>0){
             alert("房间号已存在！");
         }else{
@@ -129,8 +129,59 @@ $(document).ready(function(){
         sendMessageToContentScript('queryRooms', (response) => {
 
             fillRoomContainer(response,"keywordMapRoomContainer");
+
         });
     });
+    $("#nav-log-tab").click(function(){
+        sendMessageToContentScript('qbtn', (response) => {
+            //console.log(response);
+            $("#logList").empty();
+            var row;
+            var i=0;
+            for (let x in response) {
+                i++;
+                if(i>20)
+                    break;
+                 row+="<tr>";
+                for (let y in response[x]) {
+                    row+="<td>"+response[x][y]+"</td>";
+                }
+                row+="</tr>";
+
+            }
+
+            $("#logList").html(row);
+        });
+    });
+    $("#btnQueryMuteLog").click(function(){
+        sendMessageToContentScript('qbtn', (response) => {
+            //console.log(response);
+            var tar=$.trim($("#username").val());
+
+            var flag=false;
+            for (let x in response) {
+                if( response[x][0]==tar){
+                    flag=true;
+                    $("#logList").empty();
+                    var row="<tr><td>"+ response[x][0]+"</td><td>"+ response[x][1]
+                        +"</td><td>"+ response[x][2]+"</td><td>"+ response[x][3]+"</td></tr>"
+                    $("#logList").html(row);
+
+                    break;
+                }
+            }
+            if(flag==false)
+                alert("没有查到数据！");
+        });
+    });
+    //清空禁言日志
+    $("#btnClearMuteLog").click(function(){
+        sendMessageToContentScript('ClearMuteLog', (response) => {
+            $("#logList").empty();
+        });
+    });
+
+
     //添加关键字
     $("#btnAddRule").click(function(){
         if($.trim($("#keywords").val())==""){
@@ -158,6 +209,8 @@ $(document).ready(function(){
         sendMessageToContentScript('btnSetFansMedal--'+roomid  , (response) => {
             getRoomKeys( roomid );
         });
+
+
     });
     //添加禁言级别
     $("#btnAddLevelRule").click(function(){
@@ -166,8 +219,8 @@ $(document).ready(function(){
             alert("级别不能为空！");
             return false;
         }
-        if(/^\d{1,3}-\d{1,3}$/.test(level)==false){
-            alert("级别格式必须为  m-n  ");
+        if(/^\d{1,3}-\d{1,3}$/.test(level)==false&&level!="不限级别"){
+            alert("级别格式必须为  m-n  或 不限级别");
             return false;
         }
        if($("#keywordMapRoomContainer").find("button[class='btn btn-success']").length==0){

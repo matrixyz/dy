@@ -22,14 +22,15 @@
             <div class="card-body">
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">操作</a>
+                        <a class="nav-item nav-link  active" id="nav-room-tab" data-toggle="tab" href="#nav-room" role="tab" aria-controls="nav-room" aria-selected="false">房间管理</a>
                         <a class="nav-item nav-link " id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">禁言规则</a>
-                        <a class="nav-item nav-link " id="nav-room-tab" data-toggle="tab" href="#nav-room" role="tab" aria-controls="nav-room" aria-selected="false">房间管理</a>
+                        <a class="nav-item nav-link" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">操作</a>
+                        <a class="nav-item nav-link" id="nav-log-tab" data-toggle="tab" href="#nav-log" role="tab" aria-controls="nav-home" aria-selected="true">禁言日志</a>
                         <a class="nav-item nav-link " id="nav-help-tab" data-toggle="tab" href="#nav-help" role="tab" aria-controls="nav-help" aria-selected="false">使用说明</a>
                     </div>
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
-                    <div class="tab-pane fade show  active " id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" >
+                    <div class="tab-pane fade " id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" >
 
 
                                 <button type="button" class="btn btn-primary   " style="margin-top:5px;" id="btnExe">执行所有房间规则</button>
@@ -114,7 +115,7 @@
                         </div>
 
                 </div>
-                    <div class="tab-pane fade " id="nav-room" role="tabpanel" aria-labelledby="nav-room-tab">
+                    <div class="tab-pane fade show  active " id="nav-room" role="tabpanel" aria-labelledby="nav-room-tab">
                         <div class="row" style="height: 10px"> </div>
                         <div class="card"  >
                             <div class="card-header ">
@@ -143,6 +144,50 @@
                         </div>
 
                 </div>
+                    <div class="tab-pane fade" id="nav-log" role="tabpanel" aria-labelledby="nav-log-tab">
+                        <div class="row" style="height: 10px"> </div>
+                        <div class="form-row">
+                            <div class="col-auto">
+
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">用户名</div>
+                                    </div>
+                                    <input type="text" class="form-control" style="width:400px;" id="username" placeholder="用户名">
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" id="btnQueryMuteLog" class="btn btn-primary mb-2">查询</button>
+                                <button type="submit" id="btnClearMuteLog" class="btn btn-danger mb-2">清空日志</button>
+
+                            </div>
+                        </div>
+                        <table class="table table-sm table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">用户名</th>
+                                <th scope="col">发言内容</th>
+                                <th scope="col">日期</th>
+                                <th scope="col">房间号</th>
+                            </tr>
+                            </thead>
+                            <tbody id="logList">
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>@mdo</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>@mdo</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                     <div class="tab-pane fade " id="nav-help" role="tabpanel" aria-labelledby="nav-help-tab" >
 
                          <h1>第一步</h1>
