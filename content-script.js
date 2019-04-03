@@ -56,7 +56,7 @@ $(document).ready(function(){
                 else
                     userLevel=$.trim(target.find(".UserLevel").attr("title").replace("用户等级：",""));
             }
-           // console.log(nickName+'-'+content+'-'+hasFansMedal+'-'+userLevel);
+           console.log(nickName+'-'+content+'-'+hasFansMedal+'-'+userLevel);
             if(filterKey(content,room_id,false,hasFansMedal,userLevel)){
                 if(muteUser.indexOf(nickName+room_id)<0){
                     muteSomeOne( nickName,room_id,roomWithKeyword[room_id][2] );
@@ -256,6 +256,53 @@ $(document).ready(function(){
         window.localStorage.setItem("pattenStrCollection",JSON.stringify(roomWithKeyword));
 
     }
+    var exeLikeState=0;
+    function exeLike(){
+
+
+        var items_doms=$(".wb_card-wbCardWrap-3zPdt");//点赞dom元素集合
+
+        if(items_doms!=null){
+
+            var lastNo=0;//上一次执行周期的最后一个元素的序号
+            for (var i = 0; i < items_doms.length; i++) {
+                console.log( "data-feedid = " + $(items_doms[i]).attr("data-feedid")  );
+            }
+
+            var lastDom=$(items_doms).last();
+            var lastFeedid=$(lastDom).attr("data-feedid");
+            var nextFeedidArr=getNextPageInfo(lastFeedid);
+
+            var stopFlag=setInterval(function () {
+            },2000);
+        }
+
+
+    }
+    function getNextPageInfo(last_feedid){
+        $.ajax({
+            type: "POST",
+            url: "https://yuba.douyu.com/wbapi/web/digest?last_id="+last_feedid+"&pagesize=20&timestamp=0."+Date.parse(new Date()),
+            //data: {"ban_nickname":nickname,"room_id":room_id.replace('r',''),"ban_time":time},
+            dataType: "json",
+            success: function(data){
+                if(data!=undefined&&data.list!=undefined){
+                    var feedidArr=new Array();
+                    $.each(data.list,function(name,value) {
+                        feedidArr.push(value.feed_id);
+                    });
+                    return feedidArr;
+                }
+
+            }
+        });
+        return null;
+    }
+    function doloopLike(){
+
+    }
+
+
     // 监听消息
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
     {
@@ -373,7 +420,12 @@ $(document).ready(function(){
                 saveRoomWithKeywordToPattenStrCollection();
 
             }
-            sendResponse(roomWithKeyword) ;
+        if(request.indexOf("btnLikeExe")>=0){
+            exeLike();
+
+        }
+
+        sendResponse(roomWithKeyword) ;
 
 
 

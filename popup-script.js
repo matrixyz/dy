@@ -65,6 +65,8 @@ $(document).ready(function(){
 
     });
     $("#btnAddRoom").click(function(){
+
+
         if(/^\d{1,9}$/g.test($.trim($("#roomid").val()))==false){
             alert("房间号必须为正整数！");
             return false;
@@ -244,6 +246,17 @@ $(document).ready(function(){
             getRoomKeys( roomid );
         });
     });
+
+    $("#btnLike").click(function(){
+        sendMessageToContentScript('btnLikeExe--test' , (response) => {
+
+
+
+        });
+
+    });
+
+
     //根据房间id获取房间的禁言关键词
     function getRoomKeys(room) {
         if(room!=undefined){
