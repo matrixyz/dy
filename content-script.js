@@ -258,7 +258,11 @@ $(document).ready(function(){
     }
     var exeLikeState=0;
     function exeLike(){
-
+        if(exeLikeState==1){
+            return false;
+        }
+        exeLikeState=1;
+        var allFeedid=new Array();
 
         var items_doms=$(".wb_card-wbCardWrap-3zPdt");//点赞dom元素集合
 
@@ -267,39 +271,73 @@ $(document).ready(function(){
             var lastNo=0;//上一次执行周期的最后一个元素的序号
             for (var i = 0; i < items_doms.length; i++) {
                 console.log( "data-feedid = " + $(items_doms[i]).attr("data-feedid")  );
+                allFeedid.push( $(items_doms[i]).attr("data-feedid") );
             }
 
             var lastDom=$(items_doms).last();
             var lastFeedid=$(lastDom).attr("data-feedid");
-            var nextFeedidArr=getNextPageInfo(lastFeedid);
+
+
+
 
             var stopFlag=setInterval(function () {
-            },2000);
+
+                var nextFeedidArr=getNextPageInfo(lastFeedid);
+                    $.each(nextFeedidArr,function(index,value){
+                    console.log( "data-feedid = " + value );
+                    allFeedid.push(value);
+                });
+                lastFeedid=nextFeedidArr[nextFeedidArr.length-1];
+            },10000);
+
+            var doLikeIndex=0;
+            var stopFlagLike=setInterval(function () {
+                if(allFeedid[doLikeIndex]!=undefined){
+                    doAllLike(allFeedid[doLikeIndex]);
+                    doLikeIndex++;
+                }else{
+                    console.log("点赞feedid已使用完毕，请稍后...");
+                }
+
+            },10000);
+
+
         }
 
 
     }
     function getNextPageInfo(last_feedid){
+        var feedidArr=new Array();
         $.ajax({
-            type: "POST",
+            type: "GET",
             url: "https://yuba.douyu.com/wbapi/web/digest?last_id="+last_feedid+"&pagesize=20&timestamp=0."+Date.parse(new Date()),
             //data: {"ban_nickname":nickname,"room_id":room_id.replace('r',''),"ban_time":time},
             dataType: "json",
+            async: false,//注意此处一定要加同步，否则此方法一直返回undefined
             success: function(data){
-                if(data!=undefined&&data.list!=undefined){
-                    var feedidArr=new Array();
-                    $.each(data.list,function(name,value) {
-                        feedidArr.push(value.feed_id);
-                    });
-                    return feedidArr;
+                if(true){
+                    var datas=data.data.list;
+                    var len=datas.length;
+                    for (var i = 0; i <len; i++) {
+                        feedidArr.push( datas[i].feed_id_str);
+                    }
                 }
-
             }
         });
-        return null;
+        return  feedidArr ;
     }
-    function doloopLike(){
-
+    function doAllLike(dst_id){
+        //https://yuba.douyu.com/wbapi/web/like?timestamp=0.07232778353379321
+        $.ajax({
+            type: "POST",
+            url: "https://yuba.douyu.com/wbapi/web/like?timestamp=0."+Date.parse(new Date()),
+            data: {"dst_id":dst_id,"feed_id":dst_id },
+            dataType: "json",
+            async: false,//注意此处一定要加同步，否则此方法一直返回undefined
+            success: function(data){
+                console.log("点赞成功！");
+            }
+        });
     }
 
 
