@@ -330,8 +330,8 @@ $(document).ready(function(){
         //https://yuba.douyu.com/wbapi/web/like?timestamp=0.07232778353379321
         $.ajax({
             type: "POST",
-            url: "https://yuba.douyu.com/wbapi/web/like?timestamp=0."+Date.parse(new Date()),
-            data: {"dst_id":dst_id,"feed_id":dst_id },
+            url: "https://yuba.douyu.com/wbapi/web/like?timestamp=0.7565977763095941" ,
+            data: {"dst_id":dst_id,"feed_id":dst_id,"dst_type":0 },
             dataType: "json",
             async: false,//注意此处一定要加同步，否则此方法一直返回undefined
             success: function(data){
