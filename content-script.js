@@ -257,11 +257,64 @@ $(document).ready(function(){
 
     }
     var exeLikeState=0;
-    function exeLike(){
+    //开始模拟不断向下滚动网页，并模拟单击点赞操作
+    function exeLikePlanb() {
+
         if(exeLikeState==1){
             return false;
         }
         exeLikeState=1;
+
+        var newTop ;
+                  //使用定时器
+                  var timer = setInterval(function(){
+                          //文本是否已经到底部（底部出现在浏览器窗口中）
+                          if($(document).scrollTop() + $(window).height() >= $('body').height()){
+                                  //清除定时器
+                                  clearInterval(timer);
+
+                              }else{
+
+                                  //每次在原来的基础上移动
+                                  newTop =  $(document).scrollTop();
+                                  $(document).scrollTop(newTop + 100);
+                              }
+
+                      },2000);
+        exeLikeDoClick();
+    }
+
+    function exeLikeDoClick(){
+        var items_doms=$(".wb_card-wbCardWrap-3zPdt");//点赞dom元素集合
+        if(items_doms!=null){
+            var doms_len=items_doms.length;
+            var doLikeIndex=0;
+            var stopFlagLike=setInterval(function () {
+                if(doLikeIndex>doms_len){
+                    clearInterval(stopFlagLike);
+                    exeLikeDoClick();
+                }else{
+                    if( $($(items_doms[doLikeIndex]).find(".wbFeedHandle").get(0)).find("a").get(3)==undefined){
+                        console.log("斗鱼小助手插件程序未取得贴子DOM对象的点赞DOM对象");
+                        clearInterval(stopFlagLike);
+                        console.log("斗鱼小助手插件程序已终止执行");
+
+                    }
+                    if($($($(items_doms[doLikeIndex++]).find(".wbFeedHandle").get(0)).find("a").get(3)).attr("data-prizeaction")=="do"){
+                        $($(items_doms[doLikeIndex]).find(".wbFeedHandle").get(0)).find("a").get(3).click();
+                        console.log($($($(items_doms[doLikeIndex]).find(".wb_card-wbInfo-2aBdZ").get(0)).find("a").get(0)).text()+"  被点赞!");
+                    }
+                }
+
+            },2000);
+        }else{
+            console.log("斗鱼小助手插件程序未取得贴子DOM对象 .wb_card-wbCardWrap-3zPdt");
+        }
+    }
+    
+    //******************************************下面的三个方法属已废弃，原因参见注释******************************************
+    function exeLike(){
+
         var allFeedid=new Array();
 
         var items_doms=$(".wb_card-wbCardWrap-3zPdt");//点赞dom元素集合
@@ -326,12 +379,16 @@ $(document).ready(function(){
         });
         return  feedidArr ;
     }
+    //该功能方式已经被实验证实，无法正常发送请求获得200回答，应答都是403禁止，原因90%因为timestamp参数无法得到正确生成算法
     function doAllLike(dst_id){
         //https://yuba.douyu.com/wbapi/web/like?timestamp=0.07232778353379321
         $.ajax({
+            headers: {
+                Accept: "*/*"
+            },
             type: "POST",
-            url: "https://yuba.douyu.com/wbapi/web/like?timestamp=0.7565977763095941" ,
-            data: {"dst_id":dst_id,"feed_id":dst_id,"dst_type":0 },
+            url: "https://yuba.douyu.com/wbapi/web/like?timestamp=0.7720626120421172" ,
+            data: {"dst_type":0,"dst_id":dst_id,"feed_id":dst_id },
             dataType: "json",
             async: false,//注意此处一定要加同步，否则此方法一直返回undefined
             success: function(data){
@@ -339,6 +396,7 @@ $(document).ready(function(){
             }
         });
     }
+    //******************************************上面的三个方法属已废弃，原因参见注释******************************************
 
 
     // 监听消息
@@ -459,8 +517,8 @@ $(document).ready(function(){
 
             }
         if(request.indexOf("btnLikeExe")>=0){
-            exeLike();
-
+            //exeLike();
+            exeLikePlanb();
         }
 
         sendResponse(roomWithKeyword) ;
